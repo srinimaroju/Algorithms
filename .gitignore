@@ -7,3 +7,11 @@
 /Disk.class
 /TowersOfHanoi$Disk.class
 /TowersOfHanoi$Stack.class
+/NQueen.class
+/NQueen$Move.class
+/Move.class
+/TextJustification.class
+/ScoreCalculator.class
+/Json.class
+/JSONReadExample.class
+/LongestCommonSequence.class

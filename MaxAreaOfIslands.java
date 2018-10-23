@@ -24,10 +24,11 @@ Note: The length of each dimension in the given grid does not exceed 50.
 **/
 
 public class MaxAreaOfIslands {
-	//int maxRecursion = 0;
+	int recursions =0;
+	int loops=0;
 	public static void main(String []args) {
-		/*
-		int island_matrix[][] = {
+		
+		int island_matrix1[][] = {
 				{0,0,1,0,0,0,0,1,0,0,0,0,1},
 				{0,0,0,0,0,0,0,1,1,1,0,0,0},
 				{0,1,1,0,1,0,0,0,0,0,0,0,0},
@@ -37,56 +38,53 @@ public class MaxAreaOfIslands {
 				{0,0,0,0,0,0,0,1,1,1,0,0,0},
 				{0,0,0,0,0,0,0,1,1,0,0,0,0}
 			};
-		*/
-		/*
-		int island_matrix[][] ={
+		
+		
+		int island_matrix2[][] ={
 			{1,1,0,0,0},
 			{1,1,0,0,0},
 			{0,0,0,1,1},
 			{0,0,0,1,1}
 		};
 		
-		*/
-		int  island_matrix[][] = {
+		
+		int  island_matrix3[][] = {
 				{1,1,0,1,1},
 				{1,0,0,0,0},
 				{0,0,0,0,1},
 				{1,1,0,1,1}
 		};
 		
-		/*
-		int island_matrix[][] = {
+		
+		int island_matrix4[][] = {
 				{1,0},
 				{0,1}
 		};
-		*/
+		
 		MaxAreaOfIslands m = new MaxAreaOfIslands();
-		System.out.println(m.maxAreaOfIslands(island_matrix));
+		System.out.println(m.maxAreaOfIslands(island_matrix1));
+		System.out.println(m.maxAreaOfIslands(island_matrix2));
+		System.out.println(m.maxAreaOfIslands(island_matrix3));
+		System.out.println(m.maxAreaOfIslands(island_matrix4));
 		//System.out.println("Max area is " + m.maxAreaOfIslands(island_matrix));
 	}
 	
 	public int maxAreaOfIslands(int[][] matrix) {
+		this.recursions = 0;
+		this.loops = 0;
 		int maxArea = 0;
 		int xsize = matrix.length;
 		int ysize = xsize!=0?matrix[0].length:0;
-		int computed_island[][] = new int[xsize][ysize];
-		
 		//System.out.println("size is x:" + xsize + " y:" + ysize);
-		
-		//Initialize memory to 0
-		for(int i=0;i<xsize;i++) {
-			for(int j=0;j<ysize;j++) {
-				computed_island[i][j]=0;
-			}
-		}
 		
 		//System.out.println("Initialized array");
 		
 		for(int i=0;i<xsize;i++) {
 			for(int j=0;j<ysize;j++) {
-				if(matrix[i][j]!=0 && computed_island[i][j]!=1) {
+				if(matrix[i][j]!=0 ) {
 					//System.out.println("Calculating area of x:" + i + " y:" + j );
-					int currentArea = calculateAreaViaDFS(matrix, i, j, computed_island);
+					int currentArea = calculateAreaViaDFS(matrix, i, j, xsize, ysize);
+					this.loops++;
 					//System.out.println("Calculated area of x:" + i + " y:" + j + " is " + currentArea);
 					//System.out.println("--------------------------");
 					if(currentArea> maxArea) {
@@ -95,38 +93,27 @@ public class MaxAreaOfIslands {
 				}
 			}
 		}
+		System.out.println("Recurions" + this.recursions + " Loops:" + this.loops);
 		return maxArea;
 	}
 	
-	public int calculateAreaViaDFS(int[][] matrix, int x, int y, int[][] computed_island) {
-		int xsize = matrix.length-1;
-		int ysize = matrix[0].length-1;
+	public int calculateAreaViaDFS(int[][] matrix, int x, int y, int xsize, int ysize) {
+		this.recursions++;
 		
-		/*if(this.maxRecursion++ > 1000) {
-			return 0;
-		}*/
-		//System.out.println("Calculating area via DFS of x:" + x + " y:" + y );
-		if(x<0 || y<0 || x>xsize || y>ysize) {
+		if(x<0 || y<0 || x>=xsize || y>=ysize) {
 			return 0;
 		}
-		if(computed_island[x][y]==1) {
-			//System.out.println("Already computed x:" +x + " y: " + y);
-			return 0;
-		}
-		computed_island[x][y]=1;
-		
 		if(matrix[x][y]==0) {
 			return 0;
 		}
-		
+		matrix[x][y]=0;
 
 		int area = 
-				//calculateAreaViaDFS(matrix, x-1, y-1, computed_island) +
-				calculateAreaViaDFS(matrix, x, y-1, computed_island) +
-				calculateAreaViaDFS(matrix, x-1, y, computed_island) +
-				calculateAreaViaDFS(matrix, x, y+1, computed_island) + 
-				calculateAreaViaDFS(matrix, x+1, y, computed_island) + 1;
-				//calculateAreaViaDFS(matrix, x+1, y+1, computed_island) + 1 ;
+				calculateAreaViaDFS(matrix, x, y-1, xsize, ysize) +
+				calculateAreaViaDFS(matrix, x-1, y, xsize, ysize) +
+				calculateAreaViaDFS(matrix, x, y+1, xsize, ysize) + 
+				calculateAreaViaDFS(matrix, x+1, y, xsize, ysize) + 1;
+
 
 		return area;
 	}

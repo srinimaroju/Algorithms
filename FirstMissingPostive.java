@@ -54,7 +54,6 @@ public class FirstMissingPostive {
 				hash[num-1]++; 
 			}
 		}
-		//System.out.println(Arrays.toString(hash));
 		for(int i=0;i<nums.length;i++) {
 			if(hash[i]==0) {
 				return i+1;

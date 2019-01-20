@@ -15,8 +15,16 @@ public class BSTOps {
 		System.out.println("-------Tree is ---------------");
 		System.out.println(tree);
 		tree.inOrder();
+		
+		System.out.println("Deleting node ---------------");
+		tree.removeNode(8);
+		
+		System.out.println("-------Tree is ---------------");
+		System.out.println(tree);
+		
 	}
 }
+
 
 class BST {
 	BNode root;
@@ -85,8 +93,57 @@ class BST {
 	}
 
 	public void removeNode(int value) {
-
+		this.removeNode_Recursive(this.root, value);
 	}
+	public BNode removeNode_Recursive(BNode node, int value)  {
+		//Find the node first
+		if(node == null) return node;
+		if(node.value > value) {
+			node.left = this.removeNode_Recursive(node.left, value);
+		} else if(node.value < value) {
+			node.right = this.removeNode_Recursive(node.right, value);
+		} else {
+			//Found the node to delete
+			//Case 1: leaf node
+			System.out.println("Found Node with value: " + node.value);
+			if(node.left == null && node.right == null) {
+				node = null;
+				return node;
+			}
+			//Case 2: Right subtree is null
+			else if(node.right == null) {
+				return node.left;
+			}
+			//Case 3: Left subtree is null
+			else if(node.left == null){
+				return node.right;
+			}
+			//Case 4: Both are populated
+			else {
+				//Find min in right SubTree
+				BNode minNode = findMin(node.right);
+				BNode tempNode = new BNode(minNode.value);
+				tempNode.right = node.right;
+				tempNode.left = node.left;
+				minNode = null;
+				node = null;
+				return tempNode;
+			}
+		}
+		return node;
+	}
+	
+	public BNode findMin(BNode node) {
+		if(node.left==null && node.right==null) {
+			return node;
+		}
+		else if(node.left !=null) {
+			return findMin(node.left);
+		} else {
+			return node;
+		}
+	}
+	
 	//left, root, right
 	public String inOrderTraversalBFS_Iterative(BNode node) {
 		String result = "";

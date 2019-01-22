@@ -1,12 +1,11 @@
 package Tree;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.Stack;
 
 public class BSTOps {
 	public static void main(String []args) {
 		int[] nodes = {1,2,4,7,34,21,6,43,45,67};
+		//int[] nodes = {1,2,4};
 		BST tree = new BST();
 		for(int i : nodes) {
 			tree.addNode(i);
@@ -39,7 +38,7 @@ class BST {
 			this.root = new BNode(value);
 		} else {
 			System.out.println("inserting node " + value);
-			this.insertNode_Iterative(value, this.root);
+			this.root = this.insertNode_Recursive(value, this.root);
 		}
 	}
 	public void inOrder() {
@@ -73,6 +72,7 @@ class BST {
 				}
 			}
 		}
+		node.height = this.max(getHeight(node.left), getHeight(node.right)) + 1;
 		return node;
 	}
 
@@ -81,6 +81,7 @@ class BST {
 			node = new BNode(value);
 		}
 		else if(value == node.value) {
+			return node;
 		}
 		else if(value < node.value) {
 			//System.out.println("Insert node to left");
@@ -89,9 +90,67 @@ class BST {
 			//System.out.println("Insert node to right");
 			node.right = insertNode_Recursive(value, node.right);
 		}
+		node.height = this.max(getHeight(node.left), getHeight(node.right)) + 1;
+		int balance = this.getBalance(node);
+		//Left heavy
+		if(balance > 1) {
+			System.out.println("Balance >1 for node: " + node.value + "with balance:" + balance); 
+			//Left Left case
+			if(node.value > value) {
+			}
+			//Left Right case
+			else {
+				node.left = this.leftRotate(node.left);
+			}
+			return this.rightRotate(node);
+		} else if(balance < -1) {
+			System.out.println("Balance <1 for node: " + node.value + "with balance:" + balance); 
+			//Right Right case
+			if(node.value < value) {
+				
+			} 
+			//Right Left case
+			else {
+				node.right = this.rightRotate(node.right);
+			}
+			return this.leftRotate(node);
+		}
 		return node;
 	}
-
+	public BNode leftRotate(BNode node) {
+		//System.out.println(this.printtNode(node));
+		BNode rightChild = node.right;
+		BNode T2 = rightChild.left;
+		node.right = T2;
+		rightChild.left = node;
+		node.height = this.max(getHeight(node.left), getHeight(node.right)) + 1;
+		rightChild.height = this.max(getHeight(rightChild.left), getHeight(rightChild.right)) + 1;
+		//System.out.println(this.printtNode(rightChild));
+		return rightChild;
+	}
+	
+	public BNode rightRotate(BNode node) {
+		BNode leftChild = node.left;
+		if(leftChild.right!=null) {
+			BNode T2 = leftChild.right;
+			node.left = T2;
+		}
+		leftChild.right = node;
+		node.height = this.max(getHeight(node.left), getHeight(node.right)) + 1;
+		leftChild.height = this.max(getHeight(leftChild.left), getHeight(leftChild.right)) + 1;
+		return leftChild;
+	}
+	
+	public int max(int a, int b) {
+		return a>b?a:b;
+	}
+	public int getBalance(BNode node) {
+		return getHeight(node.left) - getHeight(node.right);
+	}
+	public int getHeight(BNode node) {
+		if(node==null) return 0;
+		return node.height;
+	}
 	public void removeNode(int value) {
 		this.removeNode_Recursive(this.root, value);
 	}
@@ -192,6 +251,9 @@ class BST {
 	public String toString() {
 		return this.toString(this.root, 1, 0);
 	}
+	public String printtNode(BNode node) {
+		return this.toString(node, 1, 0);
+	}
 	private String toString(BNode node, int level, int type) {
 		String result = "";
 		if(node==null) return result;
@@ -200,7 +262,7 @@ class BST {
 		
 		if(type==1) result+= "l:";
 		if(type==2) result+= "r:";
-		result +=  node.value;
+		result +=  node.value + ":" + node.height;
 		result += "\n" + this.toString(node.left, level+1, 1) + 
 					this.toString(node.right, level+1, 2);
 
@@ -220,10 +282,13 @@ class BNode {
 	BNode left;
 	BNode right;
 	public int value;
+	public int height;
 	public BNode(int value) {
 		left = right = null;
 		this.value = value;
+		this.height = 0;
 	}
+	
 	public String toString() {
 		String result = this.value + " left:" + this.left + " | right:" + this.right;
 		return result;

@@ -37,7 +37,7 @@ class VersionControlKeyValue<K, V> implements KeyValueStoreInterface<K, V> {
 
 		//Overwrite
 		kvs.set("key2","value2-updated");
-		System.out.println(kvs.get("key2")); //Should return value1-updated
+		System.out.println(kvs.get("key2")); //Should return value2-updated
 		System.out.println("Size is: " + kvs.size()); // Should return 2
 		System.out.println(kvs);
 	}
@@ -56,60 +56,40 @@ class VersionControlKeyValue<K, V> implements KeyValueStoreInterface<K, V> {
 		if(existingItem==null) {
 			return null;
 		} else {
-			while(existingItem.next!=null){
-				existingItem = existingItem.next;
-			} 
 			return existingItem.value;
 		}
 	}
 
 	public HashMapItem<K, V> getValue(K key) {
-		HashMapItem<K, V> existingItem = data.get(key);
-		if(existingItem==null) {
-			return null;
-		} else {
-			while(existingItem.next!=null){
-				existingItem = existingItem.next;
-			} 
-			return existingItem;
-		}
+		return data.get(key);
 	}
+	
 	public V get(K key, Long time) {
-		HashMapItem<K, V> existingItem = data.get(key);
-		if(existingItem==null) {
+		HashMapItem<K, V> item = data.get(key);
+		if(item==null) {
 			return null;
 		} else {
-			while(existingItem.next!=null){
-				if(existingItem.timestamp > time) {
-					if(existingItem.prev==null) {
-						return null;
-					}
-					return (V) existingItem.prev.value;
-				} else if(existingItem.timestamp == time) {
-					return existingItem.value;
-				} 
+			while(item.prev!=null && item.timestamp > time){
+				item = item.prev;
 			}
 		}
-		return existingItem.value;
+		return item.value;
 	}
 
 	// If the key already exists, overwrite previous key
 	public void set(K key, V value) {
 		//not yet set
-		HashMapItem<K, V> existingItem = this.getValue(key);
-		if(existingItem==null) {
-			HashMapItem<K,V> item = new HashMapItem<K,V>(key, value);
+		HashMapItem<K, V> head = this.getValue(key);
+		HashMapItem<K,V> item = new HashMapItem<K,V>(key, value);
+		if(head==null) {
 			data.put(key, item);
 		} else {
-			HashMapItem<K,V> item = new HashMapItem<K,V>(key, value);
-			while(existingItem.next!=null){
-				existingItem = existingItem.next;
-			} 
-			if(existingItem.isDeleted) {
+			if(head.isDeleted) {
 				deletedItems--;
 			}
-			existingItem.next = item;
-			item.prev = existingItem;
+			head.next = item;
+			item.prev = head;
+			data.put(key, item);
 		}
 	}
 
@@ -136,9 +116,9 @@ class VersionControlKeyValue<K, V> implements KeyValueStoreInterface<K, V> {
 			HashMapItem<K,V> item = data.get(key);
 			if(item!=null) {
 				output.append(item.toString() + " --> ");
-				while(item.next!=null) {
+				while(item.prev!=null) {
+					item = item.prev;
 					output.append(item.toString() + " --> ");
-					item = item.next;
 				}
 			}
 			output.append("\n");
@@ -161,7 +141,7 @@ class HashMapItem<K,V> {
 		isDeleted = false;
 	}
 	public String toString() {
-		return "[Key:" + this.key + ",Value:" + this.value + ",Time:" + this.timestamp+"]";
+		return "[Key:" + this.key + ",Value:" + this.value + ",Time:" + this.timestamp+ ",deleted:" + isDeleted + "]";
 	}
 }
 

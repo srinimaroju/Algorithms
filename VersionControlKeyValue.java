@@ -82,11 +82,14 @@ class VersionControlKeyValue<K, V> implements KeyValueStoreInterface<K, V> {
 		HashMapItem<K, V> head = this.getValue(key);
 		HashMapItem<K,V> item = new HashMapItem<K,V>(key, value);
 		if(head==null) {
+			//LinkedList<HashMapItem<K, V>> list = new LinkedList<HashMapItem<K, V>>();
+			//list.add(item);
 			data.put(key, item);
 		} else {
 			if(head.isDeleted) {
 				deletedItems--;
 			}
+			
 			head.next = item;
 			item.prev = head;
 			data.put(key, item);

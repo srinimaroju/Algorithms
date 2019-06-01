@@ -1,12 +1,7 @@
 package DynamicProgramming;
 
 import java.io.*;
-import java.math.*;
-import java.security.*;
-import java.text.*;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.regex.*;
+import java.util.Scanner;
 
 
 /**
@@ -15,22 +10,17 @@ import java.util.regex.*;
  *
  */
 public class StringAbbreviation {
-	public static HashMap<String, String> cache;
-
+	public static int[][] cache;
 
 	// Complete the abbreviation function below.
 	static String abbreviation(String a, String b) {
-		String key = a+"+"+b;
+		//String key = a+"+"+b;
+	
+		if(cache[a.length()][b.length()]!=0) {
+			return cache[a.length()][b.length()]==1 ?  "YES": "NO";
+		}
+		
 		String result = null;
-		if(cache==null) {
-			cache = new HashMap<String, String>();
-		}
-		else {
-			if(cache.containsKey(key)) {
-				return cache.get(key);
-			}
-		}
-
 		//System.out.println("calc abb for " + a + ":" + b);
 
 		//Base Case 1
@@ -56,30 +46,27 @@ public class StringAbbreviation {
 
 		if(result==null) {
 			//Recursion 1 - If both characters are equal - Move forward
-			if(a.charAt(a.length()-1) == b.charAt(b.length()-1)) {
-				result = abbreviation(a.substring(0,a.length()-1), b.substring(0,b.length()-1));
+			if(a.charAt(0) == b.charAt(0)) {
+				result = abbreviation(a.substring(1), b.substring(1));
 			}
 			//Recursion 2 - Not equal and Not a lower case character
-			else if(!Character.isLowerCase(a.charAt(a.length()-1))) {
+			else if(!Character.isLowerCase(a.charAt(0))) {
 				result = "NO";
 			}
-			// Recursion 3 - Lower case character
+			// Recursion 3 - Not Equal, but a lower case character
 			else {
-				if(Character.toUpperCase(a.charAt(a.length()-1)) == b.charAt(b.length()-1)) {
-					if( abbreviation(a.substring(0,a.length()-1), b) == "YES"  ||
-							abbreviation(a.substring(0,a.length()-1), b.substring(0,b.length()-1)) == "YES"
-							) {
-						result = "YES";
-					} else {
-						result = "NO";
-					}
+				if(
+					(Character.toUpperCase(a.charAt(0)) == b.charAt(0))
+						&& 
+					(abbreviation(a.substring(1), b.substring(1)) == "YES")) {
+					result = "YES";
 				} else {
-					result = abbreviation(a.substring(0,a.length()-1), b);
+					result = abbreviation(a.substring(1), b);
 				}
 			}
 		}
 
-		cache.put(key, result);
+		cache[a.length()][b.length()] = result=="YES"? 1:-1;
 		return result;
 
 	}
@@ -90,23 +77,20 @@ public class StringAbbreviation {
 
 		int q = scanner.nextInt();
 		scanner.skip("(\r\n|[\n\r\u2028\u2029\u0085])?");
-		long Totalstart = System.nanoTime();
+		//long Totalstart = System.nanoTime();
 		for (int qItr = 0; qItr < q; qItr++) {
 			String a = scanner.nextLine();
 
 			String b = scanner.nextLine();
-			long start = System.nanoTime();
+			//long start = System.nanoTime();
 			//System.out.println("Lenght of --" + a + "-- is:" + a.length() + a.charAt(a.length()-1));
-
+			cache = new int[a.length()+1][b.length()+1];
 			String result = abbreviation(a, b);
 			
-			//System.out.println("TIme taken: " + (System.nanoTime()-start) + "ns");
-			//System.out.println("Case " +  (qItr+1) + "------------");
-			cache = null;
 			bufferedWriter.write(result);
 			bufferedWriter.newLine();
 		}
-		System.out.println("Time taken: " + ((System.nanoTime()-Totalstart)/1000000.0) + "ms");
+		//System.out.println("Time taken: " + ((System.nanoTime()-Totalstart)/1000000.0) + "ms");
 
 		bufferedWriter.close();
 

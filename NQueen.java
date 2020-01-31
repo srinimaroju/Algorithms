@@ -20,19 +20,14 @@ public class NQueen {
 		//System.out.println("Called for row:" + numberofQueensPlaced);
 		if(numberofQueensPlaced==this.size) return true;
 		for(int i=0; i<this.size; i++) {
-			//System.out.println("Called for row:" + row + " column:" + i);
-			//System.out.println(this.printBoard(this.board));
 			if(doesConflict(this.board, new Move(row, i))){
 				//this.board[numberofQueensPlaced][i] = 0;
 			} 
 			else {
 				this.board[numberofQueensPlaced][i]=1;
 				if(numberofQueensPlaced==this.size) return true;
-				//System.out.println("Queen placed at row: "+ row + " column:" +  i);
-				//System.out.println(this.printBoard(this.board));
 				if(this.placeQueen(row+1, numberofQueensPlaced+1)) {
 					return true;
-					//return true;
 				} else {
 					this.board[numberofQueensPlaced][i]=0;
 				}
@@ -56,15 +51,12 @@ public class NQueen {
 				//For all Queens
 				if(board[i][j]==1) {
 					if(move.row==i || move.column==j) {
-						//System.out.println("Conflicts left and right for row:" + move.row + " column: " + move.column);
 						return true; //Conflicts left and right
 					}
 					if(Math.abs(i-move.row)==Math.abs(j-move.column)) {
-						//System.out.println("Diagonal conflict for row:" + move.row + " column: " + move.column);
 						return true; //Diagonal
 					}
 					if(Math.abs(i+j)==Math.abs(move.row+move.column)) {
-						//System.out.println("Diagonal conflict for row:" + move.row + " column: " + move.column);
 						return true; //Diagonal
 					}
 				}

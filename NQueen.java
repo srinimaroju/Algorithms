@@ -17,7 +17,6 @@ public class NQueen {
 
 	}
 	public boolean placeQueen(int row, int numberofQueensPlaced) {
-		//System.out.println("Called for row:" + numberofQueensPlaced);
 		if(numberofQueensPlaced==this.size) return true;
 		for(int i=0; i<this.size; i++) {
 			if(doesConflict(this.board, new Move(row, i))){
